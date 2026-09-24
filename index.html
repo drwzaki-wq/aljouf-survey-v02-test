@@ -1,4 +1,4 @@
-<title>استبيان الجوف — تجريبي v0.2 (المسارات التخصصية)</title>
+<title>استبيان اشتراطات الجوف</title>
 <meta name="description" content="نموذج أولي تفاعلي لاستبيان المشاركة الفنية في إعداد أدلة اشتراطات المباني والأنشطة بمنطقة الجوف">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -175,10 +175,6 @@ input[type=text]:focus, textarea:focus{outline:2px solid var(--primary); outline
 /* intro / end / done */
 .hero{margin-top:10px}
 .intro-logo{height:56px;width:auto;display:block;margin-bottom:14px}
-.hero-badge{
-  display:inline-block; font-size:12px; font-weight:700; color:var(--accent-ink,var(--accent));
-  background:var(--accent-tint); padding:5px 11px; border-radius:999px; margin-bottom:12px;
-}
 .hero h1{font-size:23px; margin-bottom:10px}
 .hero p{color:var(--text-muted); font-size:14.5px; margin:0 0 10px}
 .intro-motivate{
@@ -1021,7 +1017,6 @@ function renderIntro(){
   var box = el("div", {class:"card hero"});
   var introLogo = el("img", {class:"intro-logo", alt:"شعار المكتب الاستراتيجي لتطوير منطقة الجوف", src:"data:image/webp;base64," + LOGO_B64});
   box.appendChild(introLogo);
-  box.appendChild(el("span", {class:"hero-badge"}, ["نسخة تجريبية (0.2) — للاختبار قبل الاعتماد"]));
   box.appendChild(el("h1", {}, ["استبيان المشاركة الفنية في إعداد أدلة اشتراطات المباني والأنشطة بمنطقة الجوف"]));
   box.appendChild(el("p", {class:"intro-motivate"}, ["تمثل اشتراطات المباني والأنشطة جزءاً مؤثراً في حياة الناس وسلامتهم وجودة بيئتهم العمرانية وسهولة ممارسة أنشطتهم. وتسهم مشاركتكم بخبراتكم وملاحظاتكم في إعداد أدلة واضحة وواقعية وقابلة للتطبيق، تراعي خصائص منطقة الجوف، وتوازن بين السلامة وجودة العمران وتيسير الاستثمار، بما يحقق النفع للمجتمع بمختلف فئاته."]));
 
@@ -1033,14 +1028,6 @@ function renderIntro(){
     el("div", {class:"k"}, ["عدد الأسئلة"]), el("div", {class:"v"}, [Q.length + " سؤالاً كحد أقصى، تظهر منها فقط الأسئلة المرتبطة بإجاباتك."])
   ]));
   box.appendChild(grid);
-
-  box.appendChild(el("div", {class:"notice"}, [
-    el("b", {}, ["ملاحظة: "]), "هذا نموذج تجريبي أولي لاختبار البنية والتفرعات، وليس جاهزاً للنشر أو لجمع إجابات فعلية. البيانات التي تُدخل هنا تبقى في متصفحك فقط ولا تُرسَل إلى أي خادم."
-  ]));
-
-  var devRow = el("div", {style:"margin-top:14px"});
-  devRow.appendChild(el("button", {class:"btn btn-ghost btn-sm", onclick:autofillDemo}, ["⚡ تعبئة تلقائية ببيانات تجريبية (لأغراض الاختبار)"]));
-  box.appendChild(devRow);
 
   app.appendChild(box);
 }
@@ -1285,14 +1272,6 @@ function jumpToTrack(id){
   screen="track"; trackNodeId=id; visitedTrackNodes[id]=true; lastError=""; render();
 }
 
-function resetAll(){
-  answers = {}; otherTexts = {}; qIndex = 0; screen = "intro"; lastError="";
-  submitState = "idle"; hasSubmitted = false;
-  trackNodeId = null; trackStack = []; visitedTrackNodes = {};
-  caseIterationIndex = 0; caseRecords = [];
-  render();
-}
-
 /* ---------------------------------------------------------------------
    شاشة المراجعة
 --------------------------------------------------------------------- */
@@ -1517,105 +1496,6 @@ function renderDone(){
     box.appendChild(el("div", {class:"notice", style:"margin-top:16px"}, ["إنهاء الاستبيان — يمكنكم الآن إغلاق هذه الصفحة."]));
   }
   app.appendChild(box);
-}
-
-/* ---------------------------------------------------------------------
-   تعبئة تجريبية سريعة (أداة اختبار)
---------------------------------------------------------------------- */
-function autofillDemo(){
-  answers = {
-    participation_capacity:"PRIVATE",
-    organization_name:"مكتب الواحة الاستشاري",
-    respondent_name:"م. سالم العتيبي",
-    job_title:"مدير القسم الفني",
-    primary_specialty:"ARCH",
-    experience_band:"10_14",
-    work_locations:["SAKAKA","DUMAT"],
-    professional_contact:"salem@example.com",
-    primary_role:"CONSULT",
-    secondary_roles:["LICENSE"],
-    experienced_guides:["G01","G06","G07","G14"],
-    priority_guides:["G01","G07"],
-    experience_stages:["DESIGN","SUBMIT","REVIEW"],
-    clarity_governing_reference:"3",
-    clarity_activity_code_relation:"3",
-    clarity_sector_requirements:"4",
-    clarity_mandatory_guidance:"3",
-    clarity_evidence_documents:"4",
-    has_reference_difficulty:"YES",
-    reference_difficulty_detail:"يصعب أحياناً تحديد النسخة النافذة من كود البناء السعودي عند التعارض مع اشتراط محلي.",
-    application_challenges:["MULTIREF","INTERP","DOCS","VISUAL"],
-    challenge_priorities:["MULTIREF","DOCS","INTERP"],
-    challenge_comment:"غالباً ما تتعدد جهات المراجعة لنفس النشاط التجاري.",
-    impact_plot_characteristics:"3",
-    impact_urban_fabric:"3",
-    impact_streets_access:"4",
-    impact_parking_mobility:"4",
-    impact_climate:"3",
-    impact_infrastructure:"2",
-    impact_heritage_sensitive:"2",
-    impact_subregional_variation:"3",
-    impact_economic_tourism:"2",
-    impact_existing_buildings:"3",
-    has_other_local_factor:"NO",
-    support_tools:["CHECK","DRAW","GOODBAD","TEMPLATES"],
-    support_tools_priorities:["DRAW","CHECK","GOODBAD"],
-
-    /* المسار التخصصي (CONSULT) — بيانات تجريبية لاختبار مسار المكاتب الاستشارية */
-    consult_project_volume:"15_29",
-    consult_late_requirements_stage:["REVIEW","COORD"],
-    consult_redesign_causes:["INTERP","SITE","FIRE"],
-    consult_pre_design_clarity:"3",
-    consult_submission_docs_clarity:"4",
-    consult_review_variation_frequency:"4",
-    consult_review_variation_topics:["SETBACK","FIRE","FACADE"],
-    consult_design_translation_difficulties:["PARKING","FACADE"],
-    consult_alternative_solution_clarity:"2",
-    consult_identity_difficulties:["MATERIAL","SHADE"],
-    consult_support_tools:["DRAW","GOODBAD","CHECK"],
-    consult_additional_comment:"يفيد وجود جدول ملخص لكل دليل يوضح المتطلبات الإلزامية والإرشادية بصورة منفصلة.",
-
-    /* وحدة الهوية العمرانية */
-    identity_familiarity:"GOOD",
-    identity_guidance_clarity:"3",
-    identity_applicable_elements:["MASS","OPENINGS","MATERIAL"],
-    identity_example_needs:["SHADE","ENTRANCE"],
-    identity_context_differentiation:"2",
-    identity_alternative_solutions:"3",
-    identity_design_evidence:["SITE","FACADE","MATERIAL"],
-    identity_execution_checks:["MATERIAL","ENTRANCE"],
-    identity_visible_services:["SCREEN","GROUP"],
-    identity_additional_comment:"",
-
-    /* بطاقة الحالة التطبيقية (حالة تجريبية واحدة) */
-    case_add:"YES",
-    case_guide:"G07",
-    case_location:"SAKAKA",
-    case_project_type:"مجمع تجاري صغير بواجهة على شارع رئيس",
-    case_stage:"REVIEW",
-    case_reference_known:"YES",
-    case_reference_detail:"اشتراط الارتدادات في دليل المجمعات التجارية",
-    case_issue_type:"CONFLICT",
-    case_frequency:"3",
-    case_impact_types:["TIME","COST"],
-    case_impact_level:"2",
-    case_suggested_treatment:["CLARIFY","DRAW"],
-    case_description:"تعارضت قراءة اشتراط الارتداد الجانبي مع مخطط التنظيم المعتمد للقطعة، ما أدى إلى تأخر اعتماد المخطط أكثر من أسبوعين.",
-    case_repeat:"NO",
-
-    /* الأسئلة الختامية */
-    final_top_issues:["INTERP","DOCS","VISUAL"],
-    final_visual_priorities:["SETBACK","FACADE","PARKING"],
-    final_data_needs:["PERMIT","TRAFFIC"],
-    final_single_recommendation:"إصدار جدول موحد يلخص المتطلبات الإلزامية لكل دليل مع الإحالة المباشرة لرقم المادة.",
-    final_has_attachment:"NO",
-    final_followup_consent:"YES"
-  };
-  otherTexts = {};
-  qIndex = firstApplicableFrom(0,1);
-  screen = "question";
-  lastError = "";
-  render();
 }
 
 /* ---------------------------------------------------------------------
