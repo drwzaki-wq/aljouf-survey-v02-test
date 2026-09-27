@@ -304,7 +304,16 @@ var OPT = {
     {code:"G11",label:"البقالات والتموينات والأسواق المركزية"},
     {code:"G12",label:"مغاسل الملابس والمفروشات"},
     {code:"G13",label:"منافذ بيع المواد غير الغذائية"},
-    {code:"G14",label:"مرافق الضيافة السياحية"}
+    {code:"G14",label:"مرافق الضيافة السياحية"},
+    {code:"NONE",label:"لا ينطبق — ليست لدي خبرة مباشرة بأي منها",exclusive:true}
+  ],
+  referenceTypes: [
+    {code:"MUNI_GUIDE",label:"أدلة اشتراطات إنشاء المباني (وزارة الشؤون البلدية والقروية والإسكان)"},
+    {code:"SBC",label:"كود البناء السعودي"},
+    {code:"DESIGN_GUIDE",label:"الموجهات التصميمية الوطنية للهوية العمرانية (مثل الموجهات التصميمية للعمارة النجدية الشمالية)"},
+    {code:"REG_PLAN",label:"المخططات التنظيمية للمدن والمحافظات"},
+    {code:"SECTOR_REQ",label:"اشتراطات جهة قطاعية (الدفاع المدني، الكهرباء، الاتصالات، المياه...)"},
+    {code:"OTHER",label:"مرجع آخر",other:true}
   ],
   stages: [
     {code:"SITE",label:"دراسة الموقع"},
@@ -347,6 +356,9 @@ var OPT = {
 };
 
 function consentOk(){ return true; } /* الموافقة أُلغيت كسؤال منفصل؛ هذه الدالة تُبقي شرط الظهور صحيحاً دائماً */
+function hasGuideExperience(a){
+  return (a.experienced_guides||[]).some(function(c){return c!=="NONE";});
+}
 function clarityLowKeys(){
   return ["clarity_governing_reference","clarity_activity_code_relation",
     "clarity_sector_requirements","clarity_mandatory_guidance","clarity_evidence_documents"];
@@ -416,14 +428,17 @@ var Q = [
   {id:"G02", section:"نطاق الخبرة", varName:"priority_guides", type:"multi", required:true, max:3,
    text:"اختر حتى ثلاثة أدلة تراها أولوية للإجابة التفصيلية", help:"يجب أن تكون الأدلة المختارة ضمن إجابة السؤال السابق.", audience:"جميع المشاركين",
    poolFrom:"experienced_guides", poolOptions:OPT.guides,
-   showIf:function(a){return (a.experienced_guides||[]).length>0;}},
+   showIf:hasGuideExperience},
 
   {id:"G03", section:"نطاق الخبرة", varName:"experience_stages", type:"multi", required:true, max:9,
    text:"في أي مراحل تعاملت مع المباني أو الأنشطة المختارة؟", help:"اختر جميع المراحل التي تدخل ضمن خبرتك.", audience:"جميع المشاركين",
-   options:OPT.stages, showIf:function(a){return (a.experienced_guides||[]).length>0;}},
+   options:OPT.stages, showIf:hasGuideExperience},
 
   {id:"RF01", section:"وضوح المرجعيات", varName:"clarity_governing_reference", type:"single", required:true,
-   text:"يسهل تحديد المرجع الحاكم للمبنى أو النشاط", help:"المرجع الحاكم هو الدليل أو الكود الأساسي الذي يجب الرجوع إليه أولاً لمعرفة اشتراطات مبنى أو نشاط معيّن (مثل دليل تخصصي معتمد أو كود البناء السعودي).", audience:"جميع المشاركين",
+   text:"يسهل تحديد المرجع الحاكم للمبنى أو النشاط",
+   help:"المرجع الحاكم هو الدليل أو الكود الأساسي الذي يجب الرجوع إليه أولاً لمعرفة اشتراطات مبنى أو نشاط معيّن (مثل دليل تخصصي معتمد أو كود البناء السعودي).",
+   sectionNote:"يقصد بـ\"المرجع\" في هذا القسم: الوثائق والأكواد الوطنية القائمة فعلياً التي يُرجع إليها عند تصميم المبنى أو النشاط أو ترخيصه — مثل أدلة اشتراطات إنشاء المباني الصادرة عن وزارة الشؤون البلدية والقروية والإسكان، والموجهات التصميمية الوطنية للهوية العمرانية، وكود البناء السعودي، والمخططات التنظيمية للمدن والمحافظات، واشتراطات الجهات القطاعية (الدفاع المدني، الكهرباء، الاتصالات، المياه...). هذه الأسئلة لا تتعلق بأدلة الجوف الأربعة عشر التي يجري إعدادها حالياً ضمن هذا المشروع.",
+   audience:"جميع المشاركين",
    options:OPT.clarity, showIf:consentOk},
   {id:"RF03", section:"وضوح المرجعيات", varName:"clarity_activity_code_relation", type:"single", required:true,
    text:"العلاقة بين اشتراطات النشاط وكود البناء السعودي واضحة", help:"قيّم العبارة وفق خبرتك العملية.", audience:"جميع المشاركين",
@@ -444,8 +459,9 @@ var Q = [
    options:OPT.yesNoUnsure,
    showIf:function(a){return clarityLowKeys().some(function(k){return ["1","2","3"].indexOf(a[k])>-1;});}},
 
-  {id:"RF09", section:"وضوح المرجعيات", varName:"reference_difficulty_detail", type:"short", required:true,
-   text:"اذكر المرجع أو الموضوع موضع الصعوبة", help:"يكفي وصف موجز، ويمكن ذكر المادة أو الإصدار إن أمكن.", audience:"من اختار نعم في RF08",
+  {id:"RF09", section:"وضوح المرجعيات", varName:"reference_difficulty_detail", type:"multi", required:true, max:2,
+   text:"ما المرجع الذي يصعب تحديده أو الوصول إليه أو فهم علاقته بالمراجع الأخرى؟", help:"اختر مما يلي (حتى مرجعين)، أو اذكره في \"مرجع آخر\" إن لم يكن ضمن القائمة.", audience:"من اختار نعم في RF08",
+   options:OPT.referenceTypes,
    showIf:function(a){return a.has_reference_difficulty==="YES";}},
 
   {id:"CH01", section:"تحديات التطبيق", varName:"application_challenges", type:"multi", required:true, max:5,
@@ -1044,6 +1060,7 @@ function renderQuestion(){
   if(q.type==="rank") meta.appendChild(el("span", {class:"q-opt-tag"}, ["ترتيب أولويات"]));
   box.appendChild(meta);
 
+  if(q.sectionNote) box.appendChild(el("div", {class:"notice"}, [q.sectionNote]));
   box.appendChild(el("div", {class:"q-text"}, [q.text]));
   if(q.help) box.appendChild(el("div", {class:"q-help"}, [q.help]));
   if(q.audience && q.audience!=="جميع المشاركين") box.appendChild(el("div", {class:"q-audience"}, ["يظهر لـ: " + q.audience]));
@@ -1101,7 +1118,15 @@ function renderMulti(q){
       var arr = (answers[q.varName]||[]).slice();
       var i = arr.indexOf(opt.code);
       if(i>-1) arr.splice(i,1);
-      else { if(arr.length>=q.max) return; arr.push(opt.code); }
+      else if(opt.exclusive){
+        arr = [opt.code];
+      } else {
+        if(arr.length>=q.max) return;
+        /* اختيار خيار عادي يلغي أي خيار حصري (مثل "لا ينطبق") كان محدداً */
+        var exclusiveCodes = list.filter(function(o){return o.exclusive;}).map(function(o){return o.code;});
+        arr = arr.filter(function(c){return exclusiveCodes.indexOf(c)===-1;});
+        arr.push(opt.code);
+      }
       answers[q.varName] = arr;
       if(opt.code==="OTHER" && i>-1) delete otherTexts[q.varName];
       lastError=""; render();
